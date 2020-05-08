@@ -1,12 +1,12 @@
 # Visual cryptography tool
 
-A fun visual cryptography tool that will amaze your kids.
+A fun visual cryptography tool that will amaze your kids, or your DnD group...or yourself.
 
-![overview](overview.png)
+![overview](output.gif)
 
 ## Usage
 
-    $ python visual_crypto.py -vvv --message message.png --secret secret.png
+    $ python visual_crypto.py -vvv --message fish.png --secret fish_sec.png --ciphered fish_ciph.png
 
 This produces the ciphered image (`ciphered.png`) that looks completely random, just like the random secret image (`secret.png`).
 
@@ -14,7 +14,7 @@ Print `secret.png` on a transparent paper, and `ciphered.png` on regular paper, 
 
 You can also chose the darker color you would prefer with --darkcolor or -dc
 
-    $ python3 visual_crypto.py -vvv --message message.png --secret secret.png --ciphered ciphered_color.png -dc 65 11 122
+    $ python3 visual_crypto.py -vvv --message message.png --secret fish_ciph.png --ciphered ciphered_color.png -dc 65 11 122
 ## Requirements
 This program requires the Python Image Library (PIL). The easiest way to install it is using pip:
 
