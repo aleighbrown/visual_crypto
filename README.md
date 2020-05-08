@@ -10,7 +10,9 @@ A fun visual cryptography tool that will amaze your kids, or your DnD group...or
 
 This produces the ciphered image (`ciphered.png`) that looks completely random, just like the random secret image (`secret.png`).
 
-Print `secret.png` on a transparent paper, and `ciphered.png` on regular paper, then place the transparent paper on top of the regular paper, and see the original image suddenly appear in front of you. Make sure to print at exactly the same scale and align both papers perfectly: the image only appears when alignment is perfect.
+Place `ciphered.png` over `secret.png` to reveal the message. Works best with words. 
+
+Print `ciphered.png` on a transparent paper, and `secret.png` on regular paper, then place the transparent paper on top of the regular paper, and see the original image suddenly appear in front of you. Make sure to print at exactly the same scale and align both papers perfectly: the image only appears when alignment is perfect.
 
 You can also chose the darker color you would prefer with --darkcolor or -dc
 
