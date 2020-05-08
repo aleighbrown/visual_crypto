@@ -18,8 +18,12 @@ def get_options():
     parser.add_argument('--ciphered', '-c', metavar = "CIPHERED_IMAGE_FILE_PATH", default = "ciphered.png", help='ciphered image (to be generated)')
     parser.add_argument('--resize',  '-r', metavar = "WIDTH,HEIGHT", help='resize message image (defaults to message image size). If width or height is larger than that of the secret image, the secret image will be enlarged appropriately.')
     parser.add_argument('--prepared_message', '-p',  metavar = "PREPARED_MESSAGE_IMAGE_FILE_PATH",  help='if present, the prepared message image is saved to this path')
+    parser.add_argument('--darkcolor','-dc', default=[5, 247, 70],
+                    nargs=3, metavar='rgb_list',
+                    type=int, help='specify a range')
     parser.add_argument('--display', '-d', action='store_true')
     parser.add_argument('--verbose', '-v', action='count', default=0)
+
     args = parser.parse_args()
     if args.resize:
         try:
@@ -32,7 +36,11 @@ def get_options():
                 parser.error("Resize width should be > 0.")
             if height <= 0:
                 parser.error("Resize height should be > 0.")
-            
+
+    test = args.darkcolor
+    test.append(255)
+    args.darkcolor = tuple(test)
+
     return args
 
 def load_image(name):
@@ -63,21 +71,29 @@ def generate_secret(size, secret_image = None):
             new_secret_image.putpixel((x+1,y+1), color)
     return new_secret_image
 
-def generate_ciphered_image(secret_image, prepared_image):
+def generate_ciphered_image(secret_image, prepared_image, dark = (0,0,0,255)):
     width, height = prepared_image.size
-    ciphered_image = Image.new(mode = "1", size = (width * 2, height * 2))
+    ciphered_image = Image.new(mode = "RGBA", size = (width * 2, height * 2))
+
     for x in range(0, width*2, 2):
         for y in range(0, height*2, 2):
             secret = secret_image.getpixel((x,y))
             message = prepared_image.getpixel((x/2,y/2))
             if (message > 0 and secret > 0) or (message == 0 and secret == 0):
-                color = 0
+                #darker pixl
+                color = dark
+                #tranparent pixl
+                color2 = (0,0,0,0)
             else:
-                color = 1
-            ciphered_image.putpixel((x,  y),   1-color)
+                #one is a white pixel
+                color = (255,255,255,255)
+                color2 = (255,255,255,0)
+
+
+            ciphered_image.putpixel((x,  y),   color2)
             ciphered_image.putpixel((x+1,y),   color)
             ciphered_image.putpixel((x,  y+1), color)
-            ciphered_image.putpixel((x+1,y+1), 1-color)
+            ciphered_image.putpixel((x+1,y+1), color2)
     return ciphered_image
 
 def main():
@@ -106,11 +122,11 @@ def main():
         size = message_image.size
     else:
         size = args.resize
-    
+
     width, height = size
-    
+
     save_secret = False
-    
+
     if os.path.isfile(args.secret):
         try:
             logging.debug("Loading secret image '%s'" % (args.secret))
@@ -129,22 +145,22 @@ def main():
         save_secret = True
 
     prepared_image = prepare_message_image(message_image, size)
-    ciphered_image = generate_ciphered_image(secret_image, prepared_image)
-    
+    ciphered_image = generate_ciphered_image(secret_image, prepared_image,dark = args.darkcolor)
+
     if save_secret:
         logging.debug("Saving secret image '%s'" % (args.secret))
         try:
             secret_image.save(args.secret)
         except IOError as e:
             logging.error("I/O error while saving secret image '%s' (%s)" % (args.secret, str(e)))
-    
+
     if args.prepared_message:
         logging.debug("Saving prepared message image '%s'" % (args.prepared_message))
         try:
             prepared_image.save(args.prepared_message)
         except IOError as e:
             logging.error("I/O error while saving prepared message image '%s' (%s)" % (args.prepared_message, str(e)))
-    
+
     try:
         ciphered_image.save(args.ciphered)
     except IOError as e:
